@@ -68,7 +68,7 @@
 | **Day 26** | วาดสัตว์ในตำนาน กริฟฟอน หรือ ม้า/ยูนิคอร์น 1 ตัว | [บทเรียน 5.1](05-animal-anatomy/01-birds-wings-and-griffin.md), [5.2](05-animal-anatomy/02-bears-equines-and-aquatic.md) | 40 นาที |
 | **Day 27** | วาง Thumbnail ภาพมาสเตอร์พีซด้วย Rule of Thirds และเส้นนำสายตา | [บทเรียน 9.1](09-composition-imagination/01-composition-and-storytelling.md) | 30 นาที |
 | **Day 28** | สเก็ตช์ภาพตัวละคร (คนหรือ Kemono) ยืนในฉากหลังธรรมชาติหรือหน้าปราสาท | [บทเรียน 9.1](09-composition-imagination/01-composition-and-storytelling.md) | 45 นาที |
-| **Day 29** | ตัดเส้นและลงสีพื้น + ลงเงาด้วยเลเยอร์ Multiply | [คู่มือดิจิทัล](references/digital-art-layers-and-brushes.md), [บทเรียน 8.1](08-color-and-rendering/01-color-theory-and-fur-rendering.md) | 45 นาที |
+| **Day 29** | ตัดเส้นและลงสีพื้น + ลงเงาด้วยเลเยอร์ Multiply | [คู่มือดิจิทัล](../references/digital-art-layers-and-brushes.md), [บทเรียน 8.1](08-color-and-rendering/01-color-theory-and-fur-rendering.md) | 45 นาที |
 | **Day 30** | 🏆 **THE GRAND FINALE**: ใส่แสงแดดยามเย็น แสงสะท้อน SSS และไฮไลต์ เซฟผลงานฉลองความสำเร็จ! | [บทเรียน 9.1](09-composition-imagination/01-composition-and-storytelling.md) | 45 นาที |
 
 ---
