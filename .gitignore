@@ -1,0 +1,44 @@
+# ==============================================================================
+# .gitignore for Practice Drawing & Art Curriculum
+# ==============================================================================
+
+# OS generated files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor & IDE settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.bak
+
+# Build / Scratch / Temp files
+*.tmp
+*.log
+scratch/
+.system_generated/
+
+# Large Raw Art Projects & Backups
+# Tip: Export web-friendly JPG/PNG/WebP for versioning; keep heavy layered files local or use Git LFS
+*.clip-backup
+*.autosave
+*.tmp-clip
+# Uncomment the lines below if you wish to exclude layered working files from Git:
+# *.psd
+# *.clip
+# *.kra
+# *.procreate
+# *.sai
+# *.sai2

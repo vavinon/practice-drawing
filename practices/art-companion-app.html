@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎨 Art Studio Companion - ห้องทดลองและผู้ช่วยฝึกวาดภาพ</title>
+  <style>
+    :root {
+      --bg-dark: #12131a;
+      --card-bg: #1c1e29;
+      --card-border: #2e3245;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-pink: #ec4899;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Thai', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-size: 0.95rem;
+    }
+
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--accent-color);
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Panels */
+    .panel {
+      display: none;
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    /* Timer Panel */
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .circular-timer {
+      position: relative;
+      width: 240px;
+      height: 240px;
+    }
+
+    .circular-timer svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .circular-timer circle {
+      fill: none;
+      stroke-width: 10;
+      cx: 120;
+      cy: 120;
+      r: 105;
+    }
+
+    .timer-bg {
+      stroke: #2a2e40;
+    }
+
+    .timer-progress {
+      stroke: var(--accent-pink);
+      stroke-linecap: round;
+      stroke-dasharray: 660;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .timer-text-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .timer-display {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: #fff;
+    }
+
+    .timer-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .timer-presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .preset-btn {
+      background: #272a3a;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: #33374d;
+    }
+
+    .preset-btn.active {
+      background: var(--accent-pink);
+      border-color: var(--accent-pink);
+      color: white;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #2a2e40;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #383d54;
+    }
+
+    .prompt-box {
+      margin-top: 16px;
+      background: #141620;
+      border: 1px dashed var(--accent-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .prompt-title {
+      font-size: 0.8rem;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .prompt-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Diagnostics Panel */
+    .dropzone {
+      border: 2px dashed var(--card-border);
+      border-radius: 12px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #151722;
+      transition: all 0.2s;
+      margin-bottom: 20px;
+    }
+
+    .dropzone:hover {
+      border-color: var(--accent-color);
+      background: #181a26;
+    }
+
+    .dropzone input {
+      display: none;
+    }
+
+    .view-modes {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      background: #262939;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .mode-btn:hover {
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
+    .mode-btn.active {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: #fff;
+    }
+
+    .canvas-preview-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      background: #0f1017;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    #diagCanvas {
+      max-width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .histogram-wrap {
+      width: 100%;
+      background: #171924;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .hist-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #histCanvas {
+      width: 100%;
+      height: 60px;
+      display: block;
+    }
+
+    /* Palette Panel */
+    .color-studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .color-studio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .picker-card, .palette-preview-card {
+      background: #151722;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--card-border);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 100%;
+      height: 48px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      background: #252838;
+      border: 1px solid var(--card-border);
+      color: white;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .swatches-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .swatch-item {
+      flex: 1;
+      min-width: 70px;
+      height: 90px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 8px;
+      font-size: 0.75rem;
+      font-family: monospace;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .swatch-item:hover {
+      transform: translateY(-3px);
+    }
+
+    /* 60-30-10 Bar */
+    .ratio-bar-wrap {
+      margin-top: 20px;
+    }
+
+    .ratio-bar {
+      display: flex;
+      height: 40px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .ratio-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    /* Quest Panel */
+    .quest-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 12px;
+      background: #25293d;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-color), var(--accent-pink));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .quest-list {
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .quest-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #161824;
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+      transition: background 0.2s;
+    }
+
+    .quest-item:hover {
+      background: #1c1f2e;
+    }
+
+    .quest-item.completed {
+      background: #111e1f;
+      border-color: #10b98144;
+    }
+
+    .quest-item input[type="checkbox"] {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-green);
+      cursor: pointer;
+    }
+
+    .quest-text-wrap {
+      flex: 1;
+    }
+
+    .quest-day-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      text-transform: uppercase;
+    }
+
+    .quest-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .quest-item.completed .quest-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎨 Art Studio Companion</h1>
+    <p>ผู้ช่วยฝึกซ้อมศิลปะประจำวัน: จับเวลา Gesture • ตรวจเช็กมิติและแสงเงา • เทียบพาเลทสี • ติดตามเควสต์ 30/60 วัน</p>
+  </header>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('timer')">⏱️ Gesture Sketch Timer</button>
+    <button class="tab-btn" onclick="switchTab('diagnostics')">🔍 Value & Contrast Studio</button>
+    <button class="tab-btn" onclick="switchTab('palette')">🎨 60-30-10 Color Harmonizer</button>
+    <button class="tab-btn" onclick="switchTab('quests')">📋 Daily Quest Tracker</button>
+    <button class="tab-btn" onclick="switchTab('recipes')">💡 Recipe & Diagnostic Lab</button>
+  </div>
+
+  <!-- TAB 1: GESTURE TIMER -->
+  <div id="panel-timer" class="panel active">
+    <h2>⏱️ Gesture & Motion Sketch Timer</h2>
+    <p class="subtitle">ฝึกจับจังหวะ Line of Action ปลดล็อคความแข็งทื่อด้วยการสเก็ตช์เร็ว 30 วิ - 2 นาที</p>
+
+    <div class="timer-container">
+      <div class="circular-timer">
+        <svg>
+          <circle class="timer-bg" />
+          <circle id="timerProgress" class="timer-progress" />
+        </svg>
+        <div class="timer-text-wrap">
+          <div id="timerDisplay" class="timer-display">00:30</div>
+          <div id="timerState" class="timer-label">READY</div>
+        </div>
+      </div>
+
+      <div class="timer-presets">
+        <button class="preset-btn active" onclick="setPreset(30)">30 วินาที</button>
+        <button class="preset-btn" onclick="setPreset(45)">45 วินาที</button>
+        <button class="preset-btn" onclick="setPreset(60)">1 นาที</button>
+        <button class="preset-btn" onclick="setPreset(120)">2 นาที</button>
+        <button class="preset-btn" onclick="setPreset(300)">5 นาที</button>
+      </div>
+
+      <div class="timer-controls">
+        <button id="startBtn" class="btn btn-primary" onclick="toggleTimer()">▶ เริ่มจับเวลา</button>
+        <button class="btn btn-secondary" onclick="resetTimer()">↺ รีเซ็ต</button>
+        <button class="btn btn-secondary" onclick="nextPrompt()">🎲 สุ่มโจทย์ใหม่</button>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-title">โจทย์ฝึกซ้อมสุ่ม (Practice Prompt)</div>
+        <div id="promptText" class="prompt-text">หมาป่า Kemono กำลังกระโจนโจมตีด้วยดาบคู่ (C-Curve, Line of Action พุ่งเฉียง)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: DIAGNOSTICS STUDIO -->
+  <div id="panel-diagnostics" class="panel">
+    <h2>🔍 Diagnostic Value & Contrast Studio</h2>
+    <p class="subtitle">ลากภาพวาดของน้องมาวางเพื่อตรวจเช็กว่าภาพแบนหรือสีกลืนไหม ด้วยฟิลเตอร์ส่องแสงเงาและกราฟ Histogram</p>
+
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept="image/*">
+      <div style="font-size: 2.2rem; margin-bottom: 8px;">🖼️</div>
+      <div style="font-weight: 600;">คลิกเพื่อเลือกภาพ หรือลากไฟล์ภาพงานวาดมาวางที่นี่</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">(PNG, JPG, WebP รองรับทั้งหมด ประมวลผลในเครื่องแบบออฟไลน์)</div>
+    </div>
+
+    <div class="view-modes">
+      <button class="mode-btn active" onclick="setFilterMode('original')">ภาพต้นฉบับ (Original)</button>
+      <button class="mode-btn" onclick="setFilterMode('grayscale')">⚪ ขาวดำ (Grayscale)</button>
+      <button class="mode-btn" onclick="setFilterMode('posterize3')">🌓 กฎ Two Families (3 ค่าน้ำหนัก)</button>
+      <button class="mode-btn" onclick="setFilterMode('posterize5')">🪜 บันได 5 ค่าน้ำหนัก (5 Values)</button>
+      <button class="mode-btn" onclick="setFilterMode('squint')">👁️ จำลองการหลี่ตามอง (Squint Test)</button>
+      <button class="mode-btn" onclick="setFilterMode('occlusion')">🕳️ หลืบเงามืดลึก (Shadow Occlusion)</button>
+    </div>
+
+    <div class="canvas-preview-wrap">
+      <canvas id="diagCanvas"></canvas>
+      <div class="histogram-wrap">
+        <div class="hist-title">
+          <span>📊 กราฟกระจายตัวค่าน้ำหนัก (Value Distribution Histogram)</span>
+          <span id="contrastFeedback" style="color: var(--accent-green);">กำลังรอภาพ...</span>
+        </div>
+        <canvas id="histCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: PALETTE & 60-30-10 -->
+  <div id="panel-palette" class="panel">
+    <h2>🎨 Color Harmony & 60-30-10 Studio</h2>
+    <p class="subtitle">ออกแบบชุดสีตัวละครและภาพประกอบตามกฎ 60-30-10 และทฤษฎีแสงอุ่น-เงาเย็น</p>
+
+    <div class="color-studio-grid">
+      <div class="picker-card">
+        <div class="form-group">
+          <label>เลือกสีหลัก (Base Dominant Color)</label>
+          <input type="color" id="baseColorPicker" value="#3b82f6" oninput="generateHarmonies()">
+        </div>
+
+        <div class="form-group">
+          <label>ระบบจับคู่สี (Harmony Rule)</label>
+          <select id="harmonyMode" onchange="generateHarmonies()">
+            <option value="warm-cool">แสงอุ่น - เงาเย็น (Warm Light / Cool Shadow)</option>
+            <option value="complementary">คู่ตรงข้าม (Complementary 180°)</option>
+            <option value="analogous">สีข้างเคียงกลมกลืน (Analogous)</option>
+            <option value="triadic">สามเหลี่ยมสมดุล (Triadic)</option>
+            <option value="split">แยกคู่ตรงข้าม (Split-Complementary)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>ความอิ่มตัวของเงา (Shadow Saturation Adjust)</label>
+          <select id="shadowMood" onchange="generateHarmonies()">
+            <option value="rich">เงาอิ่มสีจัดจ้าน (Anime Rich Shadows)</option>
+            <option value="subtle">เงานุ่มนวลสมจริง (Cinematic Soft)</option>
+            <option value="deep">เงาดำลึกสไตล์ดาร์กแฟนตาซี (Moody Deep)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="palette-preview-card">
+        <div style="font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 8px;">พาเลทสีที่แนะนำ (Generated Palette)</div>
+        <div class="swatches-row" id="swatchesContainer"></div>
+
+        <div class="ratio-bar-wrap">
+          <div style="font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 4px;">อัตราส่วนภาพรวม 60-30-10</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">60% สีหลักตัวละคร/ขน • 30% สีชุด/เงา • 10% สีไฮไลต์/ตา/อัญมณี</div>
+          <div class="ratio-bar">
+            <div id="bar60" class="ratio-segment" style="width: 60%; background: #3b82f6;">60% ขน/กาย</div>
+            <div id="bar30" class="ratio-segment" style="width: 30%; background: #1e293b;">30% เสื้อผ้า</div>
+            <div id="bar10" class="ratio-segment" style="width: 10%; background: #f59e0b;">10% แววตา</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: QUEST TRACKER -->
+  <div id="panel-quests" class="panel">
+    <div class="quest-header-bar">
+      <div>
+        <h2>📋 Quest & Habit Tracker</h2>
+        <p class="subtitle" style="margin-bottom:0;">ติ๊กบันทึกภารกิจวาดรูปรายวัน บันทึกความก้าวหน้าลงในเครื่องอัตโนมัติ</p>
+      </div>
+      <div>
+        <select id="questRoadmapSelect" onchange="renderQuests()" style="width: auto; padding: 6px 14px;">
+          <option value="30">30-Day Beginner Quest</option>
+          <option value="60">60-Day Intermediate Quest</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="progress-bar-container">
+      <div id="questProgressFill" class="progress-fill"></div>
+    </div>
+
+    <div style="display:flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+      <span id="questStatsText">สำเร็จ 0 จาก 30 เควสต์ (0%)</span>
+      <button class="preset-btn" onclick="resetQuestProgress()" style="color: #ef4444;">ล้างข้อมูลความคืบหน้า</button>
+    </div>
+
+    <div class="quest-list" id="questItemsList"></div>
+  </div>
+
+  <!-- TAB 5: RECIPE & DIAGNOSTIC LAB -->
+  <div id="panel-recipes" class="panel">
+    <h2>💡 Studio Recipe Book & Diagnostic Clinic</h2>
+    <p class="subtitle">คลังสูตรสีสำเร็จรูปพร้อมคลิกคัดลอก Hex Code & เครื่องมือวินิจฉัยโรคงานวาดใน 60 วินาที</p>
+
+    <!-- Part 1: Diagnostic Clinic -->
+    <div style="background: #151722; border-radius: 12px; padding: 20px; border: 1px solid var(--card-border); margin-bottom: 24px;">
+      <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        🩺 คลินิกตรวจโรคงานวาด: งานของน้องมีอาการแบบไหนเอ่ย? (คลิกเพื่อตรวจ)
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">คลิกเลือกอาการที่กำลังสะดุดอยู่ เพื่อดูคำวินิจฉัยและวิธีกู้ชีพภาพวาดทันที</p>
+      
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+        <button class="preset-btn active" onclick="showDiagnosis('stiff')">🤖 ตัวละครแข็งทื่อเหมือนเสาไฟ</button>
+        <button class="preset-btn" onclick="showDiagnosis('eyes')">😵 หน้า 3/4 แล้วตาเบี้ยวแบน</button>
+        <button class="preset-btn" onclick="showDiagnosis('legs')">🐾 ขาสัตว์ตรงทื่อ ไม่มีสปริง</button>
+        <button class="preset-btn" onclick="showDiagnosis('muddy')">🎨 เงาเปื้อนโคลน / หน้าดำปี๋</button>
+        <button class="preset-btn" onclick="showDiagnosis('blend')">🌫️ ตัวละครกลืนหายไปกับฉาก</button>
+        <button class="preset-btn" onclick="showDiagnosis('fur')">🦔 ขนเป็นหนามแข็งกระด้าง</button>
+      </div>
+
+      <div id="diagResultBox" style="background: #1c1e2b; border-radius: 10px; padding: 16px; border-left: 4px solid var(--accent-color);">
+        <div id="diagTitle" style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 6px;">
+          🤖 อาการ: ตัวละครยืนแข็งทื่อเหมือนหุ่นยนต์
+        </div>
+        <div id="diagCause" style="font-size: 0.85rem; color: #f87171; margin-bottom: 6px;">
+          <strong>🔬 สาเหตุทางกายวิภาค:</strong> ไหล่และสะโพกขนานเท่ากันสองข้าง ขาดเส้นแกนพลัง Line of Action
+        </div>
+        <div id="diagFix" style="font-size: 0.9rem; color: #34d399; line-height: 1.5;">
+          <strong>✅ วิธีแก้ทันที:</strong> ใช้หลัก <em>Contrapposto</em> เอียงบ่าซ้ายสูง-สะโพกขวาสูงสวนทางกัน ลำตัวข้างหนึ่งหด (Pinch) อีกข้างยืด (Stretch) ถ่ายน้ำหนักลงขาข้างเดียว 90%
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 2: Recipe Book -->
+    <div>
+      <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+        🎨 การ์ดสูตรสำเร็จพาเลทสีสตูดิโอ (Studio Color Recipes)
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">(คลิกที่แถบสีใดก็ได้เพื่อคัดลอก Hex Code ไปใช้งานทันที)</p>
+
+      <div id="recipeCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+        <!-- Card 1 -->
+        <div style="background: #151722; border-radius: 10px; padding: 14px; border: 1px solid var(--card-border);">
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">🐺 หมาป่าสีเทาเงินใต้แสงจันทร์</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">แสงเย็นลึกลับ • คอนทราสต์เงิน-กรมท่า</div>
+          <div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; cursor: pointer;">
+            <div onclick="copyHex('#D9E8F5')" style="flex:1; background:#D9E8F5;" title="Moon Light: #D9E8F5"></div>
+            <div onclick="copyHex('#8A99AD')" style="flex:1; background:#8A99AD;" title="Base Fur: #8A99AD"></div>
+            <div onclick="copyHex('#323B4C')" style="flex:1; background:#323B4C;" title="Shadow: #323B4C"></div>
+            <div onclick="copyHex('#E0F7FA')" style="flex:1; background:#E0F7FA;" title="Rim Light: #E0F7FA"></div>
+            <div onclick="copyHex('#151922')" style="flex:1; background:#151922;" title="AO: #151922"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-family:monospace;">
+            <span>#D9E8F5</span><span>#8A99AD</span><span>#323B4C</span><span>#E0F7FA</span>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="background: #151722; border-radius: 10px; padding: 14px; border: 1px solid var(--card-border);">
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">🦊 จิ้งจอกส้มแดดยามเย็น (Golden Hour)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">แสงอุ่นส้มทอง • เงาเปลือกมังคุด • SSS ทะลุหู</div>
+          <div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; cursor: pointer;">
+            <div onclick="copyHex('#FFD166')" style="flex:1; background:#FFD166;" title="Sun Light: #FFD166"></div>
+            <div onclick="copyHex('#E76F51')" style="flex:1; background:#E76F51;" title="Base Fur: #E76F51"></div>
+            <div onclick="copyHex('#4A2840')" style="flex:1; background:#4A2840;" title="Shadow: #4A2840"></div>
+            <div onclick="copyHex('#FF4500')" style="flex:1; background:#FF4500;" title="SSS Glow: #FF4500"></div>
+            <div onclick="copyHex('#2A9D8F')" style="flex:1; background:#2A9D8F;" title="Emerald Eye: #2A9D8F"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-family:monospace;">
+            <span>#FFD166</span><span>#E76F51</span><span>#4A2840</span><span>#FF4500</span>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="background: #151722; border-radius: 10px; padding: 14px; border: 1px solid var(--card-border);">
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">❄️ เคโมโนะขนขาวหิมะ + หูเรืองแสง</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">ขาวนุ่มอมม่วง • หูเรืองชมพูพีช • จมูกเยลลี่</div>
+          <div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; cursor: pointer;">
+            <div onclick="copyHex('#F8FAFC')" style="flex:1; background:#F8FAFC;" title="Snow White: #F8FAFC"></div>
+            <div onclick="copyHex('#DDE3F0')" style="flex:1; background:#DDE3F0;" title="Lavender: #DDE3F0"></div>
+            <div onclick="copyHex('#A5B4CB')" style="flex:1; background:#A5B4CB;" title="Powder Shadow: #A5B4CB"></div>
+            <div onclick="copyHex('#FF9EAA')" style="flex:1; background:#FF9EAA;" title="Ear SSS: #FF9EAA"></div>
+            <div onclick="copyHex('#F472B6')" style="flex:1; background:#F472B6;" title="Paw Pink: #F472B6"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-family:monospace;">
+            <span>#F8FAFC</span><span>#DDE3F0</span><span>#A5B4CB</span><span>#FF9EAA</span>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div style="background: #151722; border-radius: 10px; padding: 14px; border: 1px solid var(--card-border);">
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">🌆 นีออนไซเบอร์พังก์ (Cyan & Magenta)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">แสงคู่ตรงข้ามคู่ฮิต • เกราะดำตัดนีออน</div>
+          <div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; cursor: pointer;">
+            <div onclick="copyHex('#06B6D4')" style="flex:1; background:#06B6D4;" title="Cyan Light: #06B6D4"></div>
+            <div onclick="copyHex('#EC4899')" style="flex:1; background:#EC4899;" title="Magenta Rim: #EC4899"></div>
+            <div onclick="copyHex('#1E1E24')" style="flex:1; background:#1E1E24;" title="Dark Armor: #1E1E24"></div>
+            <div onclick="copyHex('#FDF4FF')" style="flex:1; background:#FDF4FF;" title="Specular: #FDF4FF"></div>
+            <div onclick="copyHex('#3B82F6')" style="flex:1; background:#3B82F6;" title="Eye Glow: #3B82F6"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-family:monospace;">
+            <span>#06B6D4</span><span>#EC4899</span><span>#1E1E24</span><span>#FDF4FF</span>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div style="background: #151722; border-radius: 10px; padding: 14px; border: 1px solid var(--card-border);">
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">🍺 เตาผิงอบอุ่นในโรงเตี๊ยม (Tavern Glow)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">เปลวไฟสีอำพัน • ขนน้ำตาลอบอุ่น • เงาลึก</div>
+          <div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; cursor: pointer;">
+            <div onclick="copyHex('#FFFBEB')" style="flex:1; background:#FFFBEB;" title="Fire Core: #FFFBEB"></div>
+            <div onclick="copyHex('#F59E0B')" style="flex:1; background:#F59E0B;" title="Amber Light: #F59E0B"></div>
+            <div onclick="copyHex('#78350F')" style="flex:1; background:#78350F;" title="Leather/Fur: #78350F"></div>
+            <div onclick="copyHex('#291811')" style="flex:1; background:#291811;" title="Deep Shadow: #291811"></div>
+            <div onclick="copyHex('#FCD34D')" style="flex:1; background:#FCD34D;" title="Sparks: #FCD34D"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-family:monospace;">
+            <span>#FFFBEB</span><span>#F59E0B</span><span>#78350F</span><span>#291811</span>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div style="background: #151722; border-radius: 10px; padding: 14px; border: 1px solid var(--card-border);">
+          <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">⚔️ ดาบเหล็กกล้าและขอบทองคำ (Steel & Gold)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">โลหะสะท้อนโลก • ฟ้าครึ่งบน-ดินครึ่งล่าง</div>
+          <div style="display: flex; height: 44px; border-radius: 6px; overflow: hidden; cursor: pointer;">
+            <div onclick="copyHex('#FFFFFF')" style="flex:1; background:#FFFFFF;" title="Highlight: #FFFFFF"></div>
+            <div onclick="copyHex('#8D775F')" style="flex:1; background:#8D775F;" title="Ground Ref: #8D775F"></div>
+            <div onclick="copyHex('#4B5563')" style="flex:1; background:#4B5563;" title="Steel Metal: #4B5563"></div>
+            <div onclick="copyHex('#FBBF24')" style="flex:1; background:#FBBF24;" title="Gold: #FBBF24"></div>
+            <div onclick="copyHex('#92400E')" style="flex:1; background:#92400E;" title="Gold Shadow: #92400E"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-family:monospace;">
+            <span>#FFFFFF</span><span>#8D775F</span><span>#4B5563</span><span>#FBBF24</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('panel-' + tabId).classList.add('active');
+    }
+
+    // Audio Chime using Web Audio API
+    let audioCtx = null;
+    function playBeep(freq = 440, type = 'sine', duration = 0.2) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function playChimeStart() {
+      playBeep(523.25, 'triangle', 0.15); // C5
+      setTimeout(() => playBeep(659.25, 'triangle', 0.25), 100); // E5
+    }
+
+    function playChimeDone() {
+      playBeep(659.25, 'sine', 0.15);
+      setTimeout(() => playBeep(880, 'sine', 0.35), 120);
+    }
+
+    // --- TIMER LOGIC ---
+    let timerDuration = 30;
+    let timerRemaining = 30;
+    let timerInterval = null;
+    let isRunning = false;
+
+    const prompts = [
+      "หมาป่า Kemono กำลังกระโจนโจมตีด้วยดาบคู่ (C-Curve, Line of Action พุ่งเฉียง)",
+      "แมวนั่งกอดเข่ามองฝนตกริมหน้าต่าง (Pinch & Stretch, อารมณ์สงบ)",
+      "จิ้งจอก Anthro ฟันดาบมุมช้อนเงย Low Angle (Foreshortening แขนยักษ์)",
+      "กระต่ายสะดุ้งตกใจหูลู่ หางม้วนเข้าหว่างขา (Contrapposto)",
+      "มังกร Kemono กางปีกทะยานขึ้นจากยอดผา (Dynamic S-Curve)",
+      "เสือดาวนอนเลื้อยบิดตัวบนกิ่งไม้ (Flow & Tension, ผ่อนคลาย)",
+      "อัศวินกริฟฟอนยืนทิ้งน้ำหนักลงขาขวา แขนกอดอก (Classic Contrapposto)",
+      "หนูเวทมนตร์กำลังร่ายวงแหวนเวทพุ่งเข้าหากล้อง (Wide Angle Perspective)"
+    ];
+
+    function setPreset(sec) {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      timerDuration = sec;
+      resetTimer();
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerRemaining / 60);
+      const secs = timerRemaining % 60;
+      document.getElementById('timerDisplay').innerText = 
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+      
+      const circumference = 2 * Math.PI * 105;
+      const progress = (timerRemaining / timerDuration) * circumference;
+      document.getElementById('timerProgress').style.strokeDashoffset = circumference - progress;
+    }
+
+    function toggleTimer() {
+      if (isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      isRunning = true;
+      playChimeStart();
+      document.getElementById('startBtn').innerText = '⏸ หยุดชั่วคราว';
+      document.getElementById('startBtn').classList.replace('btn-primary', 'btn-secondary');
+      document.getElementById('timerState').innerText = 'RUNNING';
+
+      timerInterval = setInterval(() => {
+        timerRemaining--;
+        if (timerRemaining <= 3 && timerRemaining > 0) playBeep(440, 'sine', 0.1);
+        if (timerRemaining <= 0) {
+          clearInterval(timerInterval);
+          isRunning = false;
+          playChimeDone();
+          document.getElementById('startBtn').innerText = '▶ เริ่มใหม่อีกครั้ง';
+          document.getElementById('startBtn').classList.replace('btn-secondary', 'btn-primary');
+          document.getElementById('timerState').innerText = 'DONE!';
+          nextPrompt();
+        }
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('startBtn').innerText = '▶ ทำงานต่อ';
+      document.getElementById('startBtn').classList.replace('btn-secondary', 'btn-primary');
+      document.getElementById('timerState').innerText = 'PAUSED';
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerRemaining = timerDuration;
+      document.getElementById('startBtn').innerText = '▶ เริ่มจับเวลา';
+      document.getElementById('timerState').innerText = 'READY';
+      updateTimerDisplay();
+    }
+
+    function nextPrompt() {
+      const idx = Math.floor(Math.random() * prompts.length);
+      document.getElementById('promptText').innerText = prompts[idx];
+    }
+
+    // --- DIAGNOSTICS & CANVAS FILTER STUDIO ---
+    let loadedImage = null;
+    let currentFilter = 'original';
+    const diagCanvas = document.getElementById('diagCanvas');
+    const diagCtx = diagCanvas.getContext('2d');
+    const histCanvas = document.getElementById('histCanvas');
+    const histCtx = histCanvas.getContext('2d');
+
+    // Create default starter image on canvas
+    function initDefaultImage() {
+      diagCanvas.width = 400;
+      diagCanvas.height = 300;
+      const grad = diagCtx.createRadialGradient(200, 150, 20, 200, 150, 160);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, '#f59e0b');
+      grad.addColorStop(0.7, '#6366f1');
+      grad.addColorStop(1, '#0f172a');
+      diagCtx.fillStyle = grad;
+      diagCtx.fillRect(0, 0, 400, 300);
+
+      // Draw sphere
+      diagCtx.beginPath();
+      diagCtx.arc(200, 150, 80, 0, Math.PI * 2);
+      diagCtx.fillStyle = '#e2e8f0';
+      diagCtx.fill();
+
+      diagCtx.font = "bold 16px sans-serif";
+      diagCtx.fillStyle = "#1e293b";
+      diagCtx.textAlign = "center";
+      diagCtx.fillText("ลากรูปภาพงานวาดมาวางที่นี่", 200, 155);
+
+      drawHistogram();
+    }
+
+    const fileInput = document.getElementById('fileInput');
+    const dropzone = document.getElementById('dropzone');
+
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = '#6366f1'; });
+    dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = 'var(--card-border)'; });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = 'var(--card-border)';
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedImage = img;
+          applyFilter();
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setFilterMode(mode) {
+      currentFilter = mode;
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      applyFilter();
+    }
+
+    function applyFilter() {
+      if (!loadedImage) {
+        initDefaultImage();
+        return;
+      }
+
+      diagCanvas.width = loadedImage.width;
+      diagCanvas.height = loadedImage.height;
+      diagCtx.drawImage(loadedImage, 0, 0);
+
+      if (currentFilter === 'original') {
+        drawHistogram();
+        return;
+      }
+
+      const imgData = diagCtx.getImageData(0, 0, diagCanvas.width, diagCanvas.height);
+      const data = imgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b; // Standard luminance
+
+        if (currentFilter === 'grayscale') {
+          data[i] = data[i+1] = data[i+2] = lum;
+        } else if (currentFilter === 'posterize3') {
+          // Highlight, Midtone, Shadow
+          let val = 40;
+          if (lum > 170) val = 240;
+          else if (lum > 85) val = 128;
+          data[i] = data[i+1] = data[i+2] = val;
+        } else if (currentFilter === 'posterize5') {
+          // 5-value ladder (0%, 25%, 50%, 75%, 100%)
+          let step = Math.round(lum / 51) * 51;
+          data[i] = data[i+1] = data[i+2] = step;
+        } else if (currentFilter === 'occlusion') {
+          // Highlight pure deep darks (AO)
+          if (lum < 45) {
+            data[i] = 239; data[i+1] = 68; data[i+2] = 68; // Red warning
+          } else {
+            data[i] = data[i+1] = data[i+2] = lum * 0.5;
+          }
+        }
+      }
+
+      diagCtx.putImageData(imgData, 0, 0);
+
+      if (currentFilter === 'squint') {
+        // Apply heavy gaussian blur on top of grayscale
+        diagCtx.filter = 'blur(10px) grayscale(100%)';
+        diagCtx.drawImage(diagCanvas, 0, 0);
+        diagCtx.filter = 'none';
+      }
+
+      drawHistogram();
+    }
+
+    function drawHistogram() {
+      histCanvas.width = histCanvas.clientWidth || 300;
+      histCanvas.height = 60;
+      histCtx.clearRect(0, 0, histCanvas.width, histCanvas.height);
+
+      const imgData = diagCtx.getImageData(0, 0, diagCanvas.width, diagCanvas.height);
+      const data = imgData.data;
+      const bins = new Array(256).fill(0);
+
+      for (let i = 0; i < data.length; i += 4) {
+        const lum = Math.floor(0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]);
+        bins[lum]++;
+      }
+
+      const maxBin = Math.max(...bins) || 1;
+      const binWidth = histCanvas.width / 256;
+
+      for (let i = 0; i < 256; i++) {
+        const h = (bins[i] / maxBin) * histCanvas.height;
+        const col = i < 85 ? '#6366f1' : (i < 170 ? '#10b981' : '#f59e0b');
+        histCtx.fillStyle = col;
+        histCtx.fillRect(i * binWidth, histCanvas.height - h, binWidth, h);
+      }
+
+      // Check contrast feedback
+      const darkCount = bins.slice(0, 70).reduce((a, b) => a + b, 0);
+      const lightCount = bins.slice(185, 256).reduce((a, b) => a + b, 0);
+      const totalPixels = data.length / 4;
+      const feedbackEl = document.getElementById('contrastFeedback');
+
+      if (darkCount / totalPixels < 0.05 && lightCount / totalPixels < 0.05) {
+        feedbackEl.innerText = '⚠️ ภาพแบนไปทางสีเทากลาง (Low Contrast / Muddy)';
+        feedbackEl.style.color = 'var(--accent-amber)';
+      } else {
+        feedbackEl.innerText = '✅ ค่าน้ำหนักกระจายตัวดี (Good Dynamic Range)';
+        feedbackEl.style.color = 'var(--accent-green)';
+      }
+    }
+
+    // --- PALETTE STUDIO ---
+    function hexToHsl(hex) {
+      let r = parseInt(hex.slice(1,3), 16) / 255;
+      let g = parseInt(hex.slice(3,5), 16) / 255;
+      let b = parseInt(hex.slice(5,7), 16) / 255;
+      let max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      if (max === min) {
+        h = s = 0;
+      } else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+    }
+
+    function hslToHex(h, s, l) {
+      l /= 100;
+      const a = s * Math.min(l, 1 - l) / 100;
+      const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    }
+
+    function generateHarmonies() {
+      const baseHex = document.getElementById('baseColorPicker').value;
+      const mode = document.getElementById('harmonyMode').value;
+      const mood = document.getElementById('shadowMood').value;
+      const [h, s, l] = hexToHsl(baseHex);
+
+      let swatches = [];
+
+      if (mode === 'warm-cool') {
+        const shadowHue = (h + 160) % 360;
+        const satBoost = mood === 'rich' ? 20 : (mood === 'deep' ? -15 : 0);
+        swatches = [
+          { name: 'Light (อุ่น)', hex: hslToHex((h + 20) % 360, Math.min(100, s + 10), Math.min(85, l + 15)) },
+          { name: 'Base (60%)', hex: baseHex },
+          { name: 'Core Shadow', hex: hslToHex(shadowHue, Math.max(15, s + satBoost), Math.max(18, l - 25)) },
+          { name: 'Rim / SSS', hex: hslToHex((h - 30 + 360) % 360, 95, 60) }
+        ];
+      } else if (mode === 'complementary') {
+        swatches = [
+          { name: 'Base (60%)', hex: baseHex },
+          { name: 'Soft Tint', hex: hslToHex(h, Math.max(10, s - 30), Math.min(90, l + 25)) },
+          { name: 'Opposite (10%)', hex: hslToHex((h + 180) % 360, s, l) },
+          { name: 'Deep Shadow', hex: hslToHex((h + 180) % 360, s, Math.max(15, l - 30)) }
+        ];
+      } else if (mode === 'analogous') {
+        swatches = [
+          { name: 'Left Analogous', hex: hslToHex((h - 35 + 360) % 360, s, l) },
+          { name: 'Base (60%)', hex: baseHex },
+          { name: 'Right Analogous', hex: hslToHex((h + 35) % 360, s, l) },
+          { name: 'Accent Highlight', hex: hslToHex(h, Math.min(100, s + 20), 85) }
+        ];
+      } else {
+        swatches = [
+          { name: 'Triadic 1 (Base)', hex: baseHex },
+          { name: 'Triadic 2', hex: hslToHex((h + 120) % 360, s, l) },
+          { name: 'Triadic 3', hex: hslToHex((h + 240) % 360, s, l) },
+          { name: 'Shadow Bed', hex: hslToHex(h, Math.max(10, s - 20), 20) }
+        ];
+      }
+
+      // Render swatches
+      const container = document.getElementById('swatchesContainer');
+      container.innerHTML = '';
+      swatches.forEach(sw => {
+        const div = document.createElement('div');
+        div.className = 'swatch-item';
+        div.style.background = sw.hex;
+        div.innerHTML = `<span>${sw.name}</span><span>${sw.hex}</span>`;
+        div.title = 'คลิกเพื่อคัดลอก Hex Code';
+        div.onclick = () => {
+          navigator.clipboard.writeText(sw.hex);
+          alert('คัดลอกสี ' + sw.hex + ' แล้วจ้ะ!');
+        };
+        container.appendChild(div);
+      });
+
+      // Update 60-30-10 bar
+      document.getElementById('bar60').style.background = swatches[1]?.hex || baseHex;
+      document.getElementById('bar30').style.background = swatches[2]?.hex || '#333';
+      document.getElementById('bar10').style.background = swatches[3]?.hex || '#f59e0b';
+    }
+
+    // --- QUEST TRACKER ---
+    const quests30 = [
+      { day: 1, title: "Ghosted Lines 20 เส้น + วงรี 10 วง", module: "0.1" },
+      { day: 2, title: "ขึ้นกล่องลูกบาศก์โปร่งใส 3 มิติ หมุน 8 มุม", module: "0.1" },
+      { day: 3, title: "แกะสลักกล่องเป็นแก้วกาแฟและหนังสือเปิดอ้า", module: "1.1" },
+      { day: 4, title: "แกะสลักกล่องเป็นโต๊ะไม้และกระเป๋าเป้", module: "1.1" },
+      { day: 5, title: "วาดดาบแฟนตาซีบากคมและโล่เหล็ก", module: "1.2" },
+      { day: 6, title: "วาดขวดโพชั่นเวทมนตร์เรืองแสงและหีบสมบัติ", module: "1.2" },
+      { day: 7, title: "🌿 Doodle Day: พักผ่อนวาดของบนโต๊ะ 1 ชิ้น", module: "Rest" },
+      { day: 8, title: "ฝึกวัดสัดส่วนมาตรฐาน 8 ช่วงหัว", module: "4.1" },
+      { day: 9, title: "วาดหุ่นกล่องกรงอก-เชิงกรานบิดตัว 5 ท่า", module: "4.1" },
+      { day: 10, title: "วาดโครงสร้างมือ 4 สเต็ป: ฝ่ามือลิ่มและโดมข้อนิ้ว", module: "4.2" },
+      { day: 11, title: "วาดมือจับดาบ และกรงเล็บ Anthro", module: "4.2" },
+      { day: 12, title: "วาดหัว Kemono ทรงกลม + กล่องมูเซิล", module: "6.1" },
+      { day: 13, title: "วาดขา Digitigrade ทรง S-Curve และอุ้งเท้านิคุคิว", module: "6.2" },
+      { day: 14, title: "🌿 Doodle Day: สเก็ตช์หน้า Kemono ที่ชอบ 1 ตัว", module: "Rest" },
+      { day: 15, title: "วาดช่อขนริบบิ้น 3D + หูสัตว์ 3 อารมณ์", module: "6.3" },
+      { day: 16, title: "วาดหางจิ้งจอกฟูพริ้ว VS หางหมาป่าหนาแน่น", module: "6.3" },
+      { day: 17, title: "วาดกระต่ายหูตั้ง VS กระต่ายหูตก ปากตัว Y", module: "6.4" },
+      { day: 18, title: "วาดลูกบอลแสงเงา 6 โซน", module: "7.1" },
+      { day: 19, title: "ฝึกกฎ Two Families Rule บนกล่องและทรงกระบอก", module: "7.1" },
+      { day: 20, title: "ฝึกลงสีแสงอุ่น-เงาเย็น และแสงทะลุหู SSS", module: "8.1" },
+      { day: 21, title: "🌿 Doodle Day: ลงสีหางฟูเรืองแสง 1 ชิ้น", module: "Rest" },
+      { day: 22, title: "วาดห้องนอนอบอุ่นด้วย 1-Point Perspective", module: "2.1" },
+      { day: 23, title: "วาดถนนเมืองเก่า 2-Point หรือปราสาท 3-Point", module: "2.1" },
+      { day: 24, title: "วาดทิวทัศน์ภูเขา 3 ระยะ + ก้อนเมฆ 3D", module: "3.1" },
+      { day: 25, title: "วาดต้นซากุระหรือต้นหลิว + น้ำตกโขดหิน", module: "3.2" },
+      { day: 26, title: "วาดสัตว์ในตำนาน กริฟฟอน หรือ ม้า/ยูนิคอร์น", module: "5.1" },
+      { day: 27, title: "วาง Thumbnail ภาพมาสเตอร์พีซด้วย Rule of Thirds", module: "9.1" },
+      { day: 28, title: "สเก็ตช์ภาพตัวละครในฉากหลังธรรมชาติ", module: "9.1" },
+      { day: 29, title: "ตัดเส้น Line Weight และลงสีพื้นพร้อมเลเยอร์เงา", module: "0.3" },
+      { day: 30, title: "🏆 GRAND FINALE: แสงแดด Rim Light และไฮไลต์ เซฟงาน!", module: "Masterpiece" }
+    ];
+
+    function getStorageKey() {
+      const mode = document.getElementById('questRoadmapSelect').value;
+      return 'art_companion_quests_' + mode;
+    }
+
+    function renderQuests() {
+      const key = getStorageKey();
+      let completedMap = {};
+      try {
+        completedMap = JSON.parse(localStorage.getItem(key) || '{}');
+      } catch(e) {}
+
+      const container = document.getElementById('questItemsList');
+      container.innerHTML = '';
+      let completedCount = 0;
+
+      quests30.forEach(q => {
+        const isDone = !!completedMap[q.day];
+        if (isDone) completedCount++;
+
+        const item = document.createElement('div');
+        item.className = 'quest-item' + (isDone ? ' completed' : '');
+        item.innerHTML = `
+          <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleQuest(${q.day})">
+          <div class="quest-text-wrap">
+            <div class="quest-day-tag">DAY ${q.day} • [โมดูล ${q.module}]</div>
+            <div class="quest-title">${q.title}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+
+      const total = quests30.length;
+      const pct = Math.round((completedCount / total) * 100);
+      document.getElementById('questProgressFill').style.width = pct + '%';
+      document.getElementById('questStatsText').innerText = 
+        `สำเร็จ ${completedCount} จาก ${total} เควสต์ (${pct}%)`;
+    }
+
+    function toggleQuest(day) {
+      const key = getStorageKey();
+      let completedMap = {};
+      try {
+        completedMap = JSON.parse(localStorage.getItem(key) || '{}');
+      } catch(e) {}
+
+      completedMap[day] = !completedMap[day];
+      localStorage.setItem(key, JSON.stringify(completedMap));
+      renderQuests();
+    }
+
+    function resetQuestProgress() {
+      if (confirm('น้องแน่ใจไหมว่าต้องการล้างความคืบหน้าเควสต์ทั้งหมด?')) {
+        localStorage.removeItem(getStorageKey());
+        renderQuests();
+      }
+    }
+
+    // --- RECIPE & DIAGNOSTIC CLINIC LOGIC ---
+    function copyHex(hex) {
+      navigator.clipboard.writeText(hex);
+      alert('คัดลอกสี ' + hex + ' เข้าคลิปบอร์ดแล้วจ้ะ!');
+    }
+
+    const diagnoses = {
+      stiff: {
+        title: "🤖 อาการ: ตัวละครยืนแข็งทื่อเหมือนหุ่นยนต์",
+        cause: "🔬 สาเหตุทางกายวิภาค: ไหล่และสะโพกขนานเท่ากันสองข้าง ขาดเส้นแกนพลัง Line of Action",
+        fix: "✅ วิธีแก้ทันที: ใช้หลัก Contrapposto เอียงบ่าซ้ายสูง-สะโพกขวาสูงสวนทางกัน ลำตัวข้างหนึ่งหด (Pinch) อีกข้างยืด (Stretch) ถ่ายน้ำหนักลงขาข้างเดียว 90%"
+      },
+      eyes: {
+        title: "😵 อาการ: วาดหน้า 3/4 แล้วตาสองข้างเบี้ยว ไม่สมดุล",
+        cause: "🔬 สาเหตุทางมุมมอง: วาดดวงตาเป็นสติกเกอร์ 2D แปะบนหน้า ไม่บิดตามลูกบอลกะโหลก",
+        fix: "✅ วิธีแก้ทันที: ตาข้างที่อยู่ไกล (Far Eye) ต้องแคบลงในแนวนอน (Horizontal Foreshortening) และดั้งจมูกต้องตัดบังขอบหัวตาเสมอ"
+      },
+      legs: {
+        title: "🐾 อาการ: ขาสัตว์ Digitigrade ดูเหมือนขาคนยืดๆ ไม่มีแรงสปริง",
+        cause: "🔬 สาเหตุทางสรีระ: ลืมว่าสัตว์ไม่ได้ยืนเต็มฝ่าเท้า แต่วางส้นเท้าลอยกลางอากาศ",
+        fix: "✅ วิธีแก้ทันที: ดึงข้อเท้า/ส้นเท้า (Hock) ให้ลอยสูงเหนือพื้น แล้วดันหัวเข่าพุ่งไปข้างหน้า ท่อนแข้งลู่ไปข้างหลัง ให้เป็นสปริงตัว Z"
+      },
+      muddy: {
+        title: "🎨 อาการ: แรเงาแล้วหน้าเปื้อนโคลน หรือภาพดูแบนมัวซัว",
+        cause: "🔬 สาเหตุทางฟิสิกส์: ใช้สีดำ 100% หรือสีเทาหม่นปาดเงา และแสงสะท้อนในเงามืดสว่างเกินไป",
+        fix: "✅ วิธีแก้ทันที: เงาต้องมีสี (Chromatic Shadow) เสมอ เช่น แสงส้ม=เงาอมม่วง และกฎ Two Families: แสงสะท้อนในเงาห้ามสว่างกว่า Midtone ในฝั่งแสง"
+      },
+      blend: {
+        title: "🌫️ อาการ: ตัวละครกลืนหายไปกับฉากหลัง แยกชั้นไม่ออก",
+        cause: "🔬 สาเหตุทางแสง: ค่า Value ของขอบตัวละครใกล้เคียงกับฉากหลังมากเกินไป",
+        fix: "✅ วิธีแก้ทันที: ยิงแสง Rim Light (โหมด Color Dodge หรือ Add) เลาะตามแนวขนหาง ขนแก้ม และไหล่ จะผลักตัวละครให้ลอยเด่นออกมาทันที"
+      },
+      fur: {
+        title: "🦔 อาการ: ขน Kemono ดูเป็นหนามแหลมคม รก และคันตา",
+        cause: "🔬 สาเหตุทางสไตล์: วาดเส้นขนเป็นเส้นเดี่ยวๆ (Single Strands) ขีดถี่ๆ ทั่วทั้งตัว",
+        fix: "✅ วิธีแก้ทันที: รวมกลุ่มเส้นขนเป็น 'ช่อริบบิ้น 3D (Clumps)' โดยเน้นดีเทลเฉพาะขอบนอก (Silhouette) และรอยต่อแสงเงา ส่วนตรงกลางปล่อยให้เรียบเนียน"
+      }
+    };
+
+    function showDiagnosis(type) {
+      document.querySelectorAll('#panel-recipes .preset-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      const d = diagnoses[type];
+      if (!d) return;
+      document.getElementById('diagTitle').innerText = d.title;
+      document.getElementById('diagCause').innerHTML = `<strong>${d.cause.split(':')[0]}:</strong> ${d.cause.split(':')[1]}`;
+      document.getElementById('diagFix').innerHTML = `<strong>${d.fix.split(':')[0]}:</strong> ${d.fix.split(':')[1]}`;
+    }
+
+    // Initialize all
+    window.addEventListener('DOMContentLoaded', () => {
+      resetTimer();
+      initDefaultImage();
+      generateHarmonies();
+      renderQuests();
+    });
+  </script>
+</body>
+</html>
